@@ -89,6 +89,30 @@ class ElesplanMOneYearModel(reegis_tools.scenario_tools.Scenario):
                     conversion_factors={nodes[el_bus_label]: row['efficiency']})
 
             # Create RES power plants
+            all_res_params = self.table_collection['power_plants'].loc[
+                self.table_collection['feedin'].columns].join(
+                capacity.loc[region, 'capacity'])
+            for col in self.table_collection['feedin'].columns:
+                res_label = '{0}_{1}'.format(col, region_label)
+                res_params = all_res_params.loc[col]
+
+
+                # TODO: exclude hydro from investment
+                nodes[res_label] = solph.Source(
+                        label=res_label,
+                        outputs={nodes[el_bus_label]: solph.Flow(
+                            actual_value=self.table_collection['feedin'].loc[region, col],
+                            fixed=True,
+                            variable_cost=res_params['opex_var'],
+                            # TODO: wie können opex_fix berücksichtigt werden?
+                            investment=solph.Investment(
+                                ep_costs=economics.annuity(
+                                    capex=res_params['capex'],
+                                    n=res_params['lifetime'],
+                                    wacc=res_params['wacc']),
+                                existing=res_params['capacity']
+                            )
+                        )})
 
             # Connect demand
             demand_label = "demand_{}".format(region_label)
