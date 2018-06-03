@@ -135,7 +135,7 @@ class ElesplanMOneYearModel(reegis_tools.scenario_tools.Scenario):
                     )},
                     conversion_factors={
                         nodes[bus_label_out]:
-                            float(trm_params['relative_losses_per_1000_km'] *
+                            1 - float(trm_params['relative_losses_per_1000_km'] *
                             pair['length'] / 1e3)
                     })
 
