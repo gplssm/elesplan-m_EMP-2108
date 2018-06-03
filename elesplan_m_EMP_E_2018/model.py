@@ -71,6 +71,10 @@ class ElesplanMOneYearModel(reegis_tools.scenario_tools.Scenario):
             parameter_capacity = self.table_collection['power_plants'].loc[CONV_PP].join(
                 capacity.loc[region, 'capacity'])
             for idx, row in parameter_capacity.iterrows():
+                try:
+                    max_capacity = float(self.table_collection['max_capacity'].loc[region, idx])
+                except:
+                    max_capacity = None
                 conv_label = '{0}_{1}'.format(
                     idx.replace(' ', '_'), region_label)
                 nodes[conv_label] = solph.Transformer(
@@ -84,7 +88,8 @@ class ElesplanMOneYearModel(reegis_tools.scenario_tools.Scenario):
                                 capex=row['capex'],
                                 n=row['lifetime'],
                                 wacc=row['wacc']),
-                            existing=row['capacity']
+                            existing=row['capacity'],
+                            maximum=max_capacity
                         ))},
                     conversion_factors={nodes[el_bus_label]: row['efficiency']})
 
@@ -92,12 +97,10 @@ class ElesplanMOneYearModel(reegis_tools.scenario_tools.Scenario):
             all_res_params = self.table_collection['power_plants'].loc[
                 self.table_collection['feedin'].columns].join(
                 capacity.loc[region, 'capacity'])
-            for col in self.table_collection['feedin'].columns:
+            for col in ['PV', 'Wind']:
                 res_label = '{0}_{1}'.format(col, region_label)
                 res_params = all_res_params.loc[col]
 
-
-                # TODO: exclude hydro from investment
                 nodes[res_label] = solph.Source(
                         label=res_label,
                         outputs={nodes[el_bus_label]: solph.Flow(
@@ -111,6 +114,26 @@ class ElesplanMOneYearModel(reegis_tools.scenario_tools.Scenario):
                                     n=res_params['lifetime'],
                                     wacc=res_params['wacc']),
                                 existing=res_params['capacity']
+                            )
+                        )})
+            for col in ['Hydro']:
+                res_label = '{0}_{1}'.format(col, region_label)
+                res_params = all_res_params.loc[col]
+
+                nodes[res_label] = solph.Source(
+                        label=res_label,
+                        outputs={nodes[el_bus_label]: solph.Flow(
+                            actual_value=self.table_collection['feedin'].loc[region, col],
+                            fixed=True,
+                            variable_cost=res_params['opex_var'],
+                            # TODO: wie können opex_fix berücksichtigt werden?
+                            investment=solph.Investment(
+                                ep_costs=economics.annuity(
+                                    capex=res_params['capex'],
+                                    n=res_params['lifetime'],
+                                    wacc=res_params['wacc']),
+                                existing=res_params['capacity'],
+                                maximum=float(self.table_collection['max_capacity'].loc[region, 'Hydro'])
                             )
                         )})
 

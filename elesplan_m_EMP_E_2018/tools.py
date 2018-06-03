@@ -16,6 +16,10 @@ def load_csv(filepath, suffix=None, sheet_cfg=None, year=None):
     transformer_capacity = pd.read_csv(
         os.path.join(filepath,
                      FILENAME + '_initial_capacity_2020.csv'))
+    max_capacity = pd.read_csv(
+        os.path.join(filepath,
+                     FILENAME + '_max_capacity.csv'),
+        index_col=['region', 'technology'])
     feedin = pd.read_csv(
         os.path.join(filepath, FILENAME + '_feedin.csv'),
         index_col=['region', 'date'],
@@ -50,6 +54,7 @@ def load_csv(filepath, suffix=None, sheet_cfg=None, year=None):
     return {
         'power_plants': transformer_params,
         'transformer_capacity': transformer_capacity,
+        'max_capacity': max_capacity,
         'feedin': feedin,
         'demand': demand,
         'fuel': fuel_params,
