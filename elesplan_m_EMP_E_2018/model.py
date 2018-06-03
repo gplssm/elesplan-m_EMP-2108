@@ -41,7 +41,7 @@ class ElesplanMOneYearModel(reegis_tools.scenario_tools.Scenario):
                 emission=self.table_collection['fuel'].loc[
                     'Uranium', 'cost'])})
 
-        coal_bus_label = "bus_coal_{}"
+        coal_bus_label = "bus_coal"
         nodes[coal_bus_label] = solph.Bus(label=coal_bus_label)
         coal_cs_label = 'source_coal_'
         nodes[coal_cs_label] = solph.Source(
@@ -54,6 +54,9 @@ class ElesplanMOneYearModel(reegis_tools.scenario_tools.Scenario):
 
         capacity = self.table_collection['transformer_capacity'].groupby(
                     ['region', 'technology']).sum()
+
+        global_fuel_buses = {'Coal': coal_bus_label, 'CCGT': ng_bus_label,
+                             'OCGT': ng_bus_label, 'Nuclear': uranium_bus_label}
         
         # Create energy system for each region
         for region in self.table_collection['demand'].columns:
@@ -72,7 +75,7 @@ class ElesplanMOneYearModel(reegis_tools.scenario_tools.Scenario):
                     idx.replace(' ', '_'), region_label)
                 nodes[conv_label] = solph.Transformer(
                     label=conv_label,
-                    inputs={nodes[coal_cs_label]: solph.Flow()},
+                    inputs={nodes[global_fuel_buses[idx]]: solph.Flow()},
                     outputs={nodes[el_bus_label]: solph.Flow(
                         variable_cost=row['opex_var'],
                         # TODO: wie können opex_fix berücksichtigt werden?
