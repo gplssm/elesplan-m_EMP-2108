@@ -5,8 +5,14 @@ A European long-term combined investment and dispatch model: elesplan-m. It refl
  
  It's recommended to use a virtual environment!
  
+ Clone the repo
+ ```
+ git clone git@github.com:gplssm/elesplan_m_EMP-2018.git
+ ```
+ and install from local files
+ 
 ```
-pip3 install elesplan_m_EMP_E_2018 --process-dependency-links
+pip3 install <path-to-repo> --process-dependency-links
 ```
 
 # Use it
