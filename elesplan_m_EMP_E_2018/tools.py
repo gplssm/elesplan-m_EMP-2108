@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import json
 
 
 def load_csv(filepath, suffix=None, sheet_cfg=None, year=None):
@@ -63,6 +64,19 @@ def load_csv(filepath, suffix=None, sheet_cfg=None, year=None):
         'transmission_capacity': transmission_capacity
     }
 
+
+def config_writer(scenario, years, filename=None):
+
+    config = {
+        'scenario': scenario,
+        'years': years
+    }
+
+    if filename:
+        with open(filename, 'w') as fp:
+            json.dump(config, fp)
+
+    return config
 
 
 class NodeDict(dict):
