@@ -11,7 +11,7 @@ pip3 install elesplan_m_EMP_E_2018 --process-dependency-links
 
 # Use it
 
-Download data for a specific [scenario](https://cloud.rl-institut.de/index.php/s/vvHNXc0IsW2clwz/download) (click the link to download).
+Download data for a specific [scenario](https://github.com/gplssm/elesplan-m_EMP-2108/wiki/Scenarios).
 
 Unzip data to your favorite location, let's call is <data-folder>.
 
