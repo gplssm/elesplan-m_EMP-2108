@@ -2,9 +2,11 @@ from elesplan_m_EMP_E_2018.model import ElesplanMOneYearModel
 from oemof import solph
 
 
-def elesplan_m(data_path, year, scenario):
+def elesplan_m(data_path, year, scenario, debug=False):
+
+    # Instantiate model
     model_2020 = ElesplanMOneYearModel(year=year,
-                            debug=True,
+                            debug=debug,
                             data_path=data_path)
 
     # Load data
