@@ -82,12 +82,11 @@ class ElesplanMOneYearModel(reegis_tools.scenario_tools.Scenario):
                     inputs={nodes[global_fuel_buses[idx]]: solph.Flow()},
                     outputs={nodes[el_bus_label]: solph.Flow(
                         variable_cost=row['opex_var'],
-                        # TODO: wie können opex_fix berücksichtigt werden?
                         investment=solph.Investment(
                             ep_costs=economics.annuity(
                                 capex=row['capex'],
                                 n=row['lifetime'],
-                                wacc=row['wacc']),
+                                wacc=row['wacc']) + row['opex_fix'],
                             existing=row['capacity'],
                             maximum=max_capacity
                         ))},
@@ -107,12 +106,12 @@ class ElesplanMOneYearModel(reegis_tools.scenario_tools.Scenario):
                             actual_value=self.table_collection['feedin'].loc[region, col],
                             fixed=True,
                             variable_cost=res_params['opex_var'],
-                            # TODO: wie können opex_fix berücksichtigt werden?
                             investment=solph.Investment(
                                 ep_costs=economics.annuity(
                                     capex=res_params['capex'],
                                     n=res_params['lifetime'],
-                                    wacc=res_params['wacc']),
+                                    wacc=res_params['wacc']) + res_params[
+                                             'opex_fix'],
                                 existing=res_params['capacity']
                             )
                         )})
@@ -126,12 +125,12 @@ class ElesplanMOneYearModel(reegis_tools.scenario_tools.Scenario):
                             actual_value=self.table_collection['feedin'].loc[region, col],
                             fixed=True,
                             variable_cost=res_params['opex_var'],
-                            # TODO: wie können opex_fix berücksichtigt werden?
                             investment=solph.Investment(
                                 ep_costs=economics.annuity(
                                     capex=res_params['capex'],
                                     n=res_params['lifetime'],
-                                    wacc=res_params['wacc']),
+                                    wacc=res_params['wacc']) + res_params[
+                                             'opex_fix'],
                                 existing=res_params['capacity'],
                                 maximum=float(self.table_collection['max_capacity'].loc[region, 'Hydro'])
                             )
@@ -171,12 +170,12 @@ class ElesplanMOneYearModel(reegis_tools.scenario_tools.Scenario):
                     inputs={nodes[bus_label_in]: solph.Flow()},
                     outputs={nodes[bus_label_out]: solph.Flow(
                         variable_cost=float(trm_params['opex_var']),
-                        # TODO: wie können opex_fix berücksichtigt werden?
                         investment=solph.Investment(
                             ep_costs=economics.annuity(
                                 capex=float(trm_params['capex'] * pair['length']),
                                 n=float(trm_params['lifetime']),
-                                wacc=float(trm_params['wacc'])),
+                                wacc=float(trm_params['wacc'])) + float(trm_params[
+                                         'opex_fix']),
                             existing=pair['capacity']
                         )
                     )},
