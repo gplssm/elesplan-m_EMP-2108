@@ -5,20 +5,20 @@ from oemof import solph
 def elesplan_m(data_path, year, scenario, debug=False):
 
     # Instantiate model
-    model_2020 = ElesplanMOneYearModel(year=year,
-                            debug=debug,
-                            data_path=data_path)
+    model_2020 = ElesplanMOneYearModel(
+        year=year,
+        debug=debug,
+        data_path=data_path)
 
     # Load data
     model_2020.load_csv(data_path, year, scenario)
 
-    # Create energy system graph
+    # Create energy system
     es = solph.EnergySystem(
         timeindex=model_2020.table_collection['demand'].index)
-    model_2020.add_nodes2solph(es=es)
 
     # Create model & solve
-    model_2020.create_model()
+    model_2020.create_model(es)
     model_2020.solve()
 
 

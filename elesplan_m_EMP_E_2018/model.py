@@ -1,4 +1,3 @@
-import reegis_tools.scenario_tools
 import oemof.solph as solph
 from oemof.tools import economics
 import elesplan_m_EMP_E_2018.tools as tools
@@ -10,17 +9,29 @@ import os
 CONV_PP = ['Coal', 'CCGT', 'OCGT', 'Nuclear']
 
 
-class ElesplanMOneYearModel(reegis_tools.scenario_tools.Scenario):
+class ElesplanMOneYearModel():
+    """
+
+    Notes
+    -----
+    The idea and some bits of code are taken from
+    `reegis-tools <https://github.com/reegis/reegis_tools>`_.
+    Credits `@uvchik <https://github.com/uvchik>`_.
+    """
 
 
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+
+        self.es = kwargs.get('es', '')
+        self.model = kwargs.get('model', '')
         self.data_path = kwargs.get('data_path', '')
+        self.results = kwargs.get('results', '')
+        self.debug = kwargs.get('debug', False)
 
     def create_nodes(self, nodes=None):
         # Create  a special dictionary that will raise an error if a key is
         # updated. This avoids the
-        nodes = reegis_tools.scenario_tools.NodeDict()
+        nodes = tools.NodeDict()
 
         # Create global fuel sources
         ng_bus_label = "bus_natural_gas"
@@ -189,6 +200,7 @@ class ElesplanMOneYearModel(reegis_tools.scenario_tools.Scenario):
 
         # Add regional supply constraint
 
+
         return nodes
 
 
@@ -199,6 +211,15 @@ class ElesplanMOneYearModel(reegis_tools.scenario_tools.Scenario):
             data_path,
             suffix=suffix,
             year=year)
+
+    def create_model(self, es):
+
+        self.es = es
+
+        nodes = self.create_nodes()
+
+        self.es.add(*nodes.values())
+        self.model = solph.Model(self.es)
 
     def solve(self, solver='gurobi', with_duals=None):
 
@@ -218,5 +239,4 @@ class ElesplanMOneYearModel(reegis_tools.scenario_tools.Scenario):
         self.es.results['main'] = outputlib.processing.results(self.model)
         self.es.results['meta'] = outputlib.processing.meta_results(self.model)
         self.es.results['param'] = outputlib.processing.param_results(self.es)
-        self.es.results['scenario'] = self.scenario_info()
         self.results = self.es.results['main']

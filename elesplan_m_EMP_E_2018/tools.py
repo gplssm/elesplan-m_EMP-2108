@@ -62,3 +62,23 @@ def load_csv(filepath, suffix=None, sheet_cfg=None, year=None):
         'transmission_length': transmission_length,
         'transmission_capacity': transmission_capacity
     }
+
+
+
+class NodeDict(dict):
+    """
+
+    Notes
+    -----
+    Taken from `reegis-tools <https://github.com/reegis/reegis_tools>`_.
+    Credits `@uvchik <https://github.com/uvchik>`_.
+    """
+    __slots__ = ()
+
+    def __setitem__(self, key, item):
+        if super().get(key) is None:
+            super().__setitem__(key, item)
+        else:
+            msg = ("Key '{0}' already exists. ".format(key) +
+                   "Duplicate keys are not allowed in a node dictionary.")
+            raise KeyError(msg)
