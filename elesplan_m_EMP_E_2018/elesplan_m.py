@@ -5,7 +5,9 @@ import json
 import os
 
 
-def elesplan_m(data_path, year, scenario, debug=False):
+def elesplan_m(scenario_path, year, scenario, debug=False):
+
+    data_path = os.path.join(scenario_path, 'data')
 
     # Instantiate model
     model_2020 = ElesplanMOneYearModel(
@@ -23,6 +25,13 @@ def elesplan_m(data_path, year, scenario, debug=False):
     # Create model & solve
     model_2020.create_model(es)
     model_2020.solve()
+
+    # Save results
+    results_path = os.path.join(scenario_path, 'results', 'raw')
+    if not os.path.isdir(results_path):
+        os.makedirs(results_path)
+    model_2020.dump_es(
+        os.path.join(results_path, 'results_{}.es'.format(scenario)))
 
 
 def elesplan_m_cmd():
@@ -43,8 +52,7 @@ def elesplan_m_cmd():
     # read config
     config = json.load(open(os.path.join(args.data_path, 'config.cfg')))
 
-    elesplan_m(os.path.join(args.data_path, 'data'), config['years'][0],
-               config['scenario'])
+    elesplan_m(args.data_path, config['years'][0], config['scenario'])
 
 
 if __name__ == '__main__':

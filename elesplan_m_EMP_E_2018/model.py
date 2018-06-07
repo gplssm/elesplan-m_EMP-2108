@@ -240,3 +240,18 @@ class ElesplanMOneYearModel():
         self.es.results['meta'] = outputlib.processing.meta_results(self.model)
         self.es.results['param'] = outputlib.processing.param_results(self.es)
         self.results = self.es.results['main']
+
+    def dump_es(self, filename):
+        d_path = os.path.dirname(filename)
+        d_fn = filename.split(os.path.sep)[-1]
+        self.es.dump(dpath=d_path, filename=d_fn)
+        print("Results dumped to {0}.".format(filename))
+
+    def restore_es(self, filename):
+        if self.es is None:
+            self.es = solph.EnergySystem()
+        d_path = os.path.dirname(filename)
+        d_fn = filename.split(os.path.sep)[-1]
+        self.es.restore(dpath=d_path, filename=d_fn)
+        self.results = self.es.results['main']
+
