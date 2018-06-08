@@ -160,6 +160,9 @@ class ElesplanMOneYearModel():
             # Connect storages
 
             # Add excess term to balance curtailment
+            excess_label = 'excess_{}'.format(region_label)
+            nodes[excess_label] = solph.Sink(label=excess_label, inputs={
+                nodes[el_bus_label]: solph.Flow()})
 
         # Add transmission system
         trm_params = self.table_collection['transmission_params']
