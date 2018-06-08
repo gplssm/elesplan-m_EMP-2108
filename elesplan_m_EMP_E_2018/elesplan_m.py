@@ -5,7 +5,8 @@ import json
 import os
 
 
-def elesplan_m(scenario_path, year, scenario, debug=False):
+def elesplan_m(scenario_path, year, scenario, solver='gurobi',
+               solver_options=None,debug=False):
 
     data_path = os.path.join(scenario_path, 'data')
 
@@ -24,7 +25,7 @@ def elesplan_m(scenario_path, year, scenario, debug=False):
 
     # Create model & solve
     model_2020.create_model(es)
-    model_2020.solve()
+    model_2020.solve(solver=solver, solver_options=solver_options)
 
     # Save results
     results_path = os.path.join(scenario_path, 'results', 'raw')
@@ -52,7 +53,9 @@ def elesplan_m_cmd():
     # read config
     config = json.load(open(os.path.join(args.data_path, 'config.cfg')))
 
-    elesplan_m(args.data_path, config['years'][0], config['scenario'])
+    elesplan_m(args.data_path, config['years'][0], config['scenario'],
+               solver=config['solver'],
+               solver_options=config['solver_options'])
 
 
 if __name__ == '__main__':

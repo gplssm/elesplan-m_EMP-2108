@@ -221,7 +221,7 @@ class ElesplanMOneYearModel():
         self.es.add(*nodes.values())
         self.model = solph.Model(self.es)
 
-    def solve(self, solver='gurobi', with_duals=None):
+    def solve(self, solver='gurobi', with_duals=None, solver_options=None):
 
         logging.info("Optimising using {0}.".format(solver))
 
@@ -235,7 +235,8 @@ class ElesplanMOneYearModel():
             self.model.write(filename,
                              io_options={'symbolic_solver_labels': True})
 
-        self.model.solve(solver=solver, solve_kwargs={'tee': True})
+        self.model.solve(solver=solver, solve_kwargs={'tee': True},
+                         cmdline_options=solver_options)
         self.es.results['main'] = outputlib.processing.results(self.model)
         self.es.results['meta'] = outputlib.processing.meta_results(self.model)
         self.es.results['param'] = outputlib.processing.param_results(self.es)
